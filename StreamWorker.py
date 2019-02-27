@@ -1,4 +1,4 @@
-import threading, struct
+import threading, struct, logging
 
 
 class StreamWorker(threading.Thread):
@@ -10,14 +10,20 @@ class StreamWorker(threading.Thread):
         self.index = index
 
     def run(self) -> None:
-        with self.client_socket as sock:
-            while True:
-                # todo : consider adding exit conditions
-                # todo : consider wrapping function contents with try except statement
-                self.index['count'] += 1
-                size_message, address = sock.recvfrom(4)
-                size = struct.unpack('!I', size_message)[0]
 
-                data_message, address = sock.recvfrom(size)
+        try:
+            with self.client_socket as sock:
+                while True:
+                    # todo : consider adding exit conditions
+                    # todo : consider wrapping function contents with try except statement
+                    self.index['records_observed'] += 1
+                    size_message, address = sock.recvfrom(4)
+                    size = struct.unpack('!I', size_message)[0]
 
-                print(f"size: {size}, msg: {data_message}")
+                    data_message, address = sock.recvfrom(size)
+
+                    # logging.log(f"size: {size}, msg: {data_message}")
+        except Exception as exception:
+            print(f"Exception: {exception}")
+        finally:
+            print(f"Stream at host {self.address[0]}:{self.address[1]} on thread {threading.current_thread()} has closed")
