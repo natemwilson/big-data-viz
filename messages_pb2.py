@@ -24,7 +24,6 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 
 
-
 _RECORD = _descriptor.Descriptor(
   name='Record',
   full_name='Record',
