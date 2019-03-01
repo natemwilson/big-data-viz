@@ -1,9 +1,10 @@
 import socket  # TODO: refactor using socketserver and handlers (maybe?)
-import threading
+import threading, queue
 import sys
 import time
 from StreamWorker import StreamWorker
 
+from Summarizer import Summarizer
 
 
 class AggregatorServer(threading.Thread):
@@ -20,6 +21,8 @@ class AggregatorServer(threading.Thread):
             'connections_made': 0,
         }
         self.start_time = time.time()
+        self.queueList = queue.Queue()
+        self.summarizer = Summarizer(self.queueList)
 
     def run(self):
 
@@ -28,11 +31,13 @@ class AggregatorServer(threading.Thread):
         print(f"server listening on {self.host}:{self.port}\n")
         with self.server_socket as s:
             s.listen()
+
+            self.summarizer.start()
             while True:
                 client_socket, address = s.accept()
                 print(f"connection opened by {address}")
                 self.index['connections_made'] += 1
-                stream = StreamWorker(client_socket, address, self.index)
+                stream = StreamWorker(client_socket, address, self.index, self.queueList)
 
                 self.streams.append(stream)
                 stream.start()
@@ -56,6 +61,12 @@ class AggregatorServer(threading.Thread):
                 sys.exit(0)
             elif command == 'help':
                 print('print help message') # todo: write this up
+            elif command == 'getCount':
+                print(str(self.summarizer.getStatsCount()))
+            elif command == 'getMax':
+                print(str(self.summarizer.getStatsMax()[0]))
+            elif command == 'getMin':
+                print(str(self.summarizer.getStatsMin()[0]))
             else:
                 print(f"command: {command} not supported. try help")
 
