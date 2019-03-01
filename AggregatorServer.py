@@ -64,13 +64,31 @@ class AggregatorServer(threading.Thread):
             elif command == 'getCount':
                 print(str(self.summarizer.getStatsCount()))
             elif command == 'getMax':
-                print(str(self.summarizer.getStatsMax()[0]))
+                # print("".join(["\t\t\t\t" + str(i) for i in range(7)]))
+                for i, model in enumerate(self.summarizer.models):
+                    for item in model.max:
+                        print(f"{item:.2f}\t\t", end='')
+                    print()
             elif command == 'getMin':
-                print(str(self.summarizer.getStatsMin()[0]))
+                for i, model in enumerate(self.summarizer.models):
+                    for item in model.min:
+                        print(f"{item:.2f}\t\t", end='')
+                    print()
+            elif command == 'getMean':
+                for i, model in enumerate(self.summarizer.models):
+                    for item in model.mean:
+                        print(f"{item:.2f}\t\t", end='')
+                    print()
+            elif command == 'getVariance':
+                for i, model in enumerate(self.summarizer.models):
+                    for item in model.variance:
+                        print(f"{item:.2f}\t\t", end='')
+                    print()
+
             else:
                 print(f"command: {command} not supported. try help")
 
 if __name__ == '__main__':
-    server = AggregatorServer('localhost', 5555)
+    server = AggregatorServer('localhost', 5556)
     server.start()
     server.start_interpreter()

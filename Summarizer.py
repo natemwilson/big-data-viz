@@ -20,7 +20,7 @@ class Summarizer(threading.Thread):
 
         while True:
             while self.queueList.qsize() > 0:
-                for x in range(4):
+                for x in range(len(self.models)):
                     if(self.index % (2 ** x) == 0):
                         # print(str(self.queueList.get().values()))
                         self.models[x].update(self.queueList.get())
@@ -31,21 +31,32 @@ class Summarizer(threading.Thread):
     def getStatsCount(self):
         list = []
         for x in range(4):
-            list.append(self.models[x].getCount())
+            list.append(self.models[x].count)
         return list
 
     def getStatsMax(self):
         list = []
         for x in range(4):
-            list.append(self.models[x].getMax())
+            list.append(self.models[x].max)
         return list
 
     def getStatsMin(self):
         list = []
         for x in range(4):
-            list.append(self.models[x].getMin())
+            list.append(self.models[x].min)
         return list
 
+    def getStatsMean(self):
+        list = []
+        for x in range(4):
+            list.append(self.models[x].mean)
+        return list
+
+    def getStatsVariance(self):
+        list = []
+        for x in range(4):
+            list.append(self.models[x].variance)
+        return list
 # if __name__ == '__main__':
 #     q = queue.Queue()
 #     q.put(1)
