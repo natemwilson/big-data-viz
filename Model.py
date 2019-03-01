@@ -6,7 +6,6 @@ import time
 class Model:
 
     def __init__(self, type):
-        super().__init__()
         self.type = type
         self.count = 0
         self.mean = [0]*7
