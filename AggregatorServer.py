@@ -16,10 +16,7 @@ class AggregatorServer(threading.Thread):
         self.streams = []  # todo: implement logic for removing dead streams from this list
         self.host = host
         self.port = port
-        self.index = {
-            'records_observed': 0,
-            'connections_made': 0,
-        }
+        self.index = {'records_observed': 0, 'connections_made': 0}
         self.start_time = time.time()
         self.queueList = queue.Queue()
         self.summarizer = Summarizer(self.queueList)
@@ -84,11 +81,15 @@ class AggregatorServer(threading.Thread):
                     for item in model.variance:
                         print(f"{item:.2f}\t\t", end='')
                     print()
+            elif command == 'corr':
+                a1 = line.split(" ")[1]
+                a2 = line.split(" ")[2]
+                print(self.summarizer.correlation_matrix.get_correlation(a1, a2))
 
             else:
                 print(f"command: {command} not supported. try help")
 
 if __name__ == '__main__':
-    server = AggregatorServer('localhost', 5556)
+    server = AggregatorServer('localhost', 5555)
     server.start()
     server.start_interpreter()
