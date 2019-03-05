@@ -55,11 +55,11 @@ class AggregatorServer(threading.Thread):
                 print('goodbye')
                 sys.exit(0)
             elif command == 'help':
-                print('print help message') # todo: write this up
+                print('print help message')  # todo: write this up
             else:
                 print(f"command: {command} not supported. try help")
 
 if __name__ == '__main__':
     server = AggregatorServer('localhost', 5555)
     server.start()
-    server.start_interpreter()
+    # server.start_interpreter()

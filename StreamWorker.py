@@ -22,7 +22,7 @@ class StreamWorker(threading.Thread):
 
                     data_message, address = sock.recvfrom(size)
 
-                    # logging.log(f"size: {size}, msg: {data_message}")
+                    print(f"size: {size}, msg: {data_message}")
         except Exception as exception:
             print(f"Exception: {exception}")
         finally:
