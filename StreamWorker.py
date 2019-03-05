@@ -22,9 +22,11 @@ class StreamWorker(threading.Thread):
                     size_message, address = sock.recvfrom(4)
                     size = struct.unpack('!I', size_message)[0]
                     data_message, address = sock.recvfrom(size)
+
                     self.queueList.put(json.loads(data_message))
                     # print(json.loads(data_message))
                     # logging.log(f"size: {size}, msg: {data_message}")
+                    # print(f"size: {size}, msg: {data_message}")
         except Exception as exception:
             print(f"Exception: {exception}")
         finally:

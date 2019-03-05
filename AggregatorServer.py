@@ -84,11 +84,10 @@ class AggregatorServer(threading.Thread):
                     for item in model.variance:
                         print(f"{item:.2f}\t\t", end='')
                     print()
-
             else:
                 print(f"command: {command} not supported. try help")
 
 if __name__ == '__main__':
     server = AggregatorServer('localhost', 5556)
     server.start()
-    server.start_interpreter()
+    # server.start_interpreter()
