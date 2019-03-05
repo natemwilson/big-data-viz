@@ -21,7 +21,7 @@ class InfiniteEmitter(EmitterBase):
                 # send actual message
                 sock.sendto(serialized, self.server_addr)
 
-                time.sleep(2)
+                # time.sleep(0.5)
 
     @staticmethod
     def data_generator():
@@ -37,5 +37,5 @@ class InfiniteEmitter(EmitterBase):
             ix += 1
 
 if __name__ == '__main__':
-    emitter = InfiniteEmitter('localhost', 5555)
+    emitter = InfiniteEmitter('localhost', 5556)
     emitter.start()
