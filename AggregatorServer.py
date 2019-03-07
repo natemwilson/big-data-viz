@@ -17,10 +17,7 @@ class AggregatorServer(threading.Thread):
         self.streams = []  # todo: implement logic for removing dead streams from this list
         self.host = host
         self.port = port
-        self.index = {
-            'records_observed': 0,
-            'connections_made': 0,
-        }
+        self.index = {'records_observed': 0, 'connections_made': 0}
         self.start_time = time.time()
         self.queueList = queue.Queue()
         self.summarizer = DataSummarizer(self.queueList)
@@ -82,6 +79,12 @@ class AggregatorServer(threading.Thread):
                 print("Press 0 for Day and 1 for Month")
                 line = input()
                 self.printStats(line.split(" ", 1)[0], 5)
+
+            elif command == 'corr':
+                a1 = line.split(" ")[1]
+                a2 = line.split(" ")[2]
+                print(self.summarizer.correlation_matrix.get_correlation(a1, a2))
+
             else:
                 print(f"command: {command} not supported. try help")
 
