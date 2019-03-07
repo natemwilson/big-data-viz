@@ -1,6 +1,8 @@
 import threading, struct, logging, queue, time
 
 from Bin import Bin
+from StreamCorrelationMatrix import StreamCorrelationMatrix
+
 
 class DataSummarizer(threading.Thread):
 
@@ -9,6 +11,8 @@ class DataSummarizer(threading.Thread):
         self.queueList = queueList
         self.index = 1
         self.bins = []
+        self.correlation_matrix = StreamCorrelationMatrix()
+
 
     def run(self):
         print("summarizer started")
@@ -19,8 +23,14 @@ class DataSummarizer(threading.Thread):
 
         while True:
             while self.queueList.qsize() > 0:
-                for x in range(len(self.bins)):
-                    self.bins[x].update(self.queueList.get())
+                record = self.queueList.get()
+
+
+                for bin in self.bins:
+                    bin.update(record)
+
+
+                self.correlation_matrix.update(record)
 
             time.sleep(1)
 
