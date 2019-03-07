@@ -1,16 +1,17 @@
 import threading, struct, logging, queue, time
 
 from Model import Model
+
 from StreamCorrelationMatrix import StreamCorrelationMatrix
 
 class Summarizer(threading.Thread):
     def __init__(self, queueList):
+
         super().__init__()
         self.queueList = queueList
         self.index = 1
         self.models = []
         self.correlation_matrix = StreamCorrelationMatrix()
-
 
 
     def run(self):
@@ -33,6 +34,7 @@ class Summarizer(threading.Thread):
 
                 self.index += 1
             time.sleep(1)
+
 
     def getStatsCount(self):
         list = []

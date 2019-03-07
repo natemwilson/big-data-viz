@@ -86,10 +86,11 @@ class AggregatorServer(threading.Thread):
                 a2 = line.split(" ")[2]
                 print(self.summarizer.correlation_matrix.get_correlation(a1, a2))
 
+
             else:
                 print(f"command: {command} not supported. try help")
 
 if __name__ == '__main__':
-    server = AggregatorServer('localhost', 5555)
+    server = AggregatorServer('localhost', 5556)
     server.start()
     server.start_interpreter()
