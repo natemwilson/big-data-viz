@@ -4,7 +4,8 @@ import sys
 import time
 from StreamWorker import StreamWorker
 
-from Summarizer import Summarizer
+from DataSummarizer import DataSummarizer
+import datetime
 
 
 class AggregatorServer(threading.Thread):
@@ -19,7 +20,7 @@ class AggregatorServer(threading.Thread):
         self.index = {'records_observed': 0, 'connections_made': 0}
         self.start_time = time.time()
         self.queueList = queue.Queue()
-        self.summarizer = Summarizer(self.queueList)
+        self.summarizer = DataSummarizer(self.queueList)
 
     def run(self):
 
@@ -59,36 +60,84 @@ class AggregatorServer(threading.Thread):
             elif command == 'help':
                 print('print help message') # todo: write this up
             elif command == 'getCount':
-                print(str(self.summarizer.getStatsCount()))
+                print("Press 0 for Day and 1 for Month")
+                line = input()
+                self.printStats(line.split(" ", 1)[0], 1)
             elif command == 'getMax':
-                # print("".join(["\t\t\t\t" + str(i) for i in range(7)]))
-                for i, model in enumerate(self.summarizer.models):
-                    for item in model.max:
-                        print(f"{item:.2f}\t\t", end='')
-                    print()
+                print("Press 0 for Day and 1 for Month")
+                line = input()
+                self.printStats(line.split(" ", 1)[0], 2)
             elif command == 'getMin':
-                for i, model in enumerate(self.summarizer.models):
-                    for item in model.min:
-                        print(f"{item:.2f}\t\t", end='')
-                    print()
+                print("Press 0 for Day and 1 for Month")
+                line = input()
+                self.printStats(line.split(" ", 1)[0], 3)
             elif command == 'getMean':
-                for i, model in enumerate(self.summarizer.models):
-                    for item in model.mean:
-                        print(f"{item:.2f}\t\t", end='')
-                    print()
+                print("Press 0 for Day and 1 for Month")
+                line = input()
+                self.printStats(line.split(" ", 1)[0], 4)
             elif command == 'getVariance':
-                for i, model in enumerate(self.summarizer.models):
-                    for item in model.variance:
-                        print(f"{item:.2f}\t\t", end='')
-                    print()
+                print("Press 0 for Day and 1 for Month")
+                line = input()
+                self.printStats(line.split(" ", 1)[0], 5)
+
             elif command == 'corr':
                 a1 = line.split(" ")[1]
                 a2 = line.split(" ")[2]
                 print(self.summarizer.correlation_matrix.get_correlation(a1, a2))
 
-
             else:
                 print(f"command: {command} not supported. try help")
+
+    def printStats(self, resolutionLevel, statVariable):
+        print("resolutionlevel: " + str(resolutionLevel) + " and statsVariable: " + str(statVariable))
+        if int(resolutionLevel) == 1:
+            print("Enter the month number: ")
+            line = input()
+            month = line.split(" ", 1)[0]
+            if self.summarizer.bins[int(resolutionLevel)].count[int(month) - 1] == 0:
+                print("No records found for this day!")
+                'break'
+            elif statVariable == 1:
+                print("The number of records processed at this month are: " + str(self.summarizer.bins[int(resolutionLevel)].count[int(month) - 1]))
+            elif statVariable == 2:
+                print("The maximum of all records processed at this month are: " + str(self.summarizer.bins[int(resolutionLevel)].max[int(month) - 1]))
+            elif statVariable == 3:
+                print("The minimum of all records processed at this month are: " + str(self.summarizer.bins[int(resolutionLevel)].min[int(month) - 1]))
+            elif statVariable == 4:
+                print("The mean of records processed at this month are: " + str(self.summarizer.bins[int(resolutionLevel)].mean[int(month) - 1]))
+            elif statVariable == 5:
+                print("The variance of records processed at this month are: " + str(self.summarizer.bins[int(resolutionLevel)].variance[int(month) - 1]))
+
+        elif int(resolutionLevel) == 0:
+            print("Enter the day(yyyymmdd): ")
+            line = input()
+            day = line.split(" ", 1)[0]
+            dayValue = self.nthDayOfYear(day)
+            print("dayvalue: " + str(dayValue))
+
+            if self.summarizer.bins[int(resolutionLevel)].count[int(dayValue) - 1] == 0:
+                print("No records found for this day!")
+                'break'
+            elif statVariable == 1:
+                print("The number of records processed on this day are: " + str(self.summarizer.bins[int(resolutionLevel)].count[int(dayValue) - 1]))
+            elif statVariable == 2:
+                print("The max of records processed on this day are: " + str(self.summarizer.bins[int(resolutionLevel)].max[int(dayValue) - 1]))
+            elif statVariable == 3:
+                print("The min of records processed on this day are: " + str(self.summarizer.bins[int(resolutionLevel)].min[int(dayValue) - 1]))
+            elif statVariable == 4:
+                print("The mean of records processed on this day are: " + str(self.summarizer.bins[int(resolutionLevel)].mean[int(dayValue) - 1]))
+            elif statVariable == 5:
+                print("The variance of records processed on this day are: " + str(self.summarizer.bins[int(resolutionLevel)].variance[int(dayValue) - 1]))
+
+        else:
+            print("here")
+
+    def nthDayOfYear(self, day):
+        fmt = '%Y%m%d'
+        dt = datetime.datetime.strptime(day, fmt)
+        tt = dt.timetuple()
+        index = tt.tm_yday
+        return index
 
 if __name__ == '__main__':
     server = AggregatorServer('localhost', 5556)
