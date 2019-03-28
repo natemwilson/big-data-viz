@@ -64,6 +64,7 @@ class AggregatorServer(threading.Thread):
                 line = input()
                 self.printStats(line.split(" ", 1)[0], 1)
             elif command == 'getMax':
+
                 print("Press 0 for Day and 1 for Month")
                 line = input()
                 self.printStats(line.split(" ", 1)[0], 2)
@@ -89,7 +90,7 @@ class AggregatorServer(threading.Thread):
                 print(f"command: {command} not supported. try help")
 
     def printStats(self, resolutionLevel, statVariable):
-        print("resolutionlevel: " + str(resolutionLevel) + " and statsVariable: " + str(statVariable))
+        # print("resolutionlevel: " + str(resolutionLevel) + " and statsVariable: " + str(statVariable))
         if int(resolutionLevel) == 1:
             print("Enter the month number: ")
             line = input()
