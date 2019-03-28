@@ -26,7 +26,6 @@ class Summarizer(threading.Thread):
             while not self.queueList.empty():
                 record = self.queueList.get()
 
-                self.correlation_matrix.update(record)
 
                 for x, model in enumerate(self.models):
                     if self.index % (2 ** x) == 0:

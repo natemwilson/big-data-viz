@@ -7,6 +7,8 @@ from StreamWorker import StreamWorker
 from DataSummarizer import DataSummarizer
 import datetime
 
+from xmlrpc.server import SimpleXMLRPCServer
+
 
 class AggregatorServer(threading.Thread):
 
@@ -21,6 +23,7 @@ class AggregatorServer(threading.Thread):
         self.start_time = time.time()
         self.queueList = queue.Queue()
         self.summarizer = DataSummarizer(self.queueList)
+
 
     def run(self):
 
@@ -140,6 +143,12 @@ class AggregatorServer(threading.Thread):
         return index
 
 if __name__ == '__main__':
-    server = AggregatorServer('localhost', 5556)
-    server.start()
-    server.start_interpreter()
+    agg_server = AggregatorServer('localhost', 55556)
+    agg_server.start()
+    #agg_server.start_interpreter()
+
+    rpc_server = SimpleXMLRPCServer(("localhost", 22228))
+    #rpc_server.register_function( "get_correlation")
+    rpc_server.register_instance(agg_server, allow_dotted_names=True)
+    rpc_server.serve_forever()
+
