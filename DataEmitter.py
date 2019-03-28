@@ -42,5 +42,5 @@ class DataEmitter(EmitterBase):
                 time.sleep(0.5)
 
 if __name__ == '__main__':
-    emitter = DataEmitter('localhost', 5556, 'data/CRNS0101-05-2019-AK_Sitka_1_NE.txt')
+    emitter = DataEmitter('localhost', 55556, 'data/CRNS0101-05-2019-AK_Sitka_1_NE.txt')
     emitter.start()
