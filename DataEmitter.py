@@ -47,4 +47,5 @@ if __name__ == '__main__':
     command = line.split(" ", 1)[0]
     print(command)
     emitter = DataEmitter('localhost', 5556, command)
+
     emitter.start()
