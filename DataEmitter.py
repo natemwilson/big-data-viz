@@ -39,8 +39,13 @@ class DataEmitter(EmitterBase):
                 # send actual message
                 sock.sendto(serialized, self.server_addr)
 
-                time.sleep(0.5)
+                # time.sleep(0.5)
 
 if __name__ == '__main__':
-    emitter = DataEmitter('localhost', 55556, 'data/CRNS0101-05-2019-AK_Sitka_1_NE.txt')
+    print("enter the name of the file")
+    line = input()
+    command = line.split(" ", 1)[0]
+    print(command)
+    emitter = DataEmitter('localhost', 5556, command)
+
     emitter.start()

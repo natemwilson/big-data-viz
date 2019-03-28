@@ -6,35 +6,38 @@ import datetime
 
 class Bin:
 
-    def __init__(self, size, type):
-        self.type = type
-        self.size = size
-        self.count = [0]*size
-        self.mean = [0]*size
-        self.min = [sys.maxsize]*size
-        self.max = [-sys.maxsize - 1]*size
-        self.variance = [0]*size
+    def __init__(self):
+        # self.type = type
+        self.size = 5 # represent each of the 9 features
+        self.count = 0
+        self.mean = [0]*self.size
+        self.min = [sys.maxsize]*self.size
+        self.max = [-sys.maxsize - 1]*self.size
+        self.variance = [0]*self.size
 
-    def update(self, record):
+    def update(self, recordList):
 
 
 
-        if(self.type == 1):
-            fmt = '%Y%m%d'
-            s = str(record['UTC_DATE'])
-            dt = datetime.datetime.strptime(s, fmt)
-            tt = dt.timetuple()
-            index = tt.tm_yday - 1
-        else:
-            index = int(str(record['UTC_DATE'])[4:6]) - 1
-        self.count[index] += 1
-        newVal = record['PRECIPITATION']
-        self.max[index] = max(self.max[index],newVal)
-        self.min[index] = min(self.min[index], newVal)
-        mean = self.mean[index] + (newVal - self.mean[index]) / self.count[index]
-        variance = self.variance[index] + (newVal - self.mean[index]) * (newVal - mean)
-        self.mean[index] = mean
-        self.variance[index] = variance
+
+        # AIR_TEMPERATURE = record['AIR_TEMPERATURE']
+        # PRECIPITATION = record['PRECIPITATION']
+        # SOLAR_RADIATION = record['SOLAR_RADIATION']
+        # SURFACE_TEMPERATURE = record['SURFACE_TEMPERATURE']
+        # RELATIVE_HUMIDITY = record['RELATIVE_HUMIDITY']
+
+        self.count += 1
+
+        self.max = [max(x1, x2) for x1, x2 in zip(self.max,recordList)]
+        self.min = [min(x1, x2) for x1, x2 in zip(self.min, recordList)]
+
+        for i in range(self.size):
+            mean = self.mean[i] + (recordList[i] - self.mean[i]) / self.count
+            variance = self.variance[i] + (recordList[i] - self.mean[i]) * (recordList[i] - mean)
+            self.mean[i] = mean
+            self.variance[i] = variance
+
+
         # print("updating for index: " + str(index) + " where value is: " + str(newVal) + "count: " + str(self.count[index]))
         # print("new count: " + str(self.count))
 
