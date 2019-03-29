@@ -144,7 +144,7 @@ class AggregatorServer(threading.Thread):
         return index
 
 if __name__ == '__main__':
-    agg_server = AggregatorServer('localhost', 55556)
+    agg_server = AggregatorServer('localhost', 55559)
     agg_server.start()
     #agg_server.start_interpreter()
 
