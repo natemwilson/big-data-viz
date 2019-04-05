@@ -1,5 +1,8 @@
 from EmitterBase import EmitterBase
 import json, struct, time, pandas as pd
+import glob
+import threading
+
 
 class DataEmitter(EmitterBase):
 
@@ -42,10 +45,23 @@ class DataEmitter(EmitterBase):
                 # time.sleep(0.5)
 
 if __name__ == '__main__':
-    print("enter the name of the file")
-    line = input()
-    command = line.split(" ", 1)[0]
-    print(command)
-    emitter = DataEmitter('localhost', 5556, command)
 
-    emitter.start()
+    txt_files = glob.glob("2006/CRN*.txt")
+    print("num of files: " + str(len(txt_files)))
+
+    emitters = []
+
+    for file in txt_files:
+        print(f"Reading file: {file}")
+        emitters.append(DataEmitter('localhost', 55557, file))
+
+    threads = []
+    for emitter in emitters:
+        t = threading.Thread(target=emitter.start)
+        threads.append(t)
+        t.start()
+        print(f"starting thread {t}")
+
+
+
+

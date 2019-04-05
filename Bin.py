@@ -11,8 +11,8 @@ class Bin:
         self.size = 5 # represent each of the 9 features
         self.count = 0
         self.mean = [0]*self.size
-        self.min = [sys.maxsize]*self.size
-        self.max = [-sys.maxsize - 1]*self.size
+        self.min = [100000]*self.size
+        self.max = [-1]*self.size
         self.variance = [0]*self.size
 
     def update(self, recordList):
