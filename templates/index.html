@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Flasked Altair</title>
+    <meta charset="utf-8">
+
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">script></script>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.14/vega-embed.js"></script>-->
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+    <script src="https://vega.github.io/datalib/datalib.min.js"></script>
+
+   <link rel="stlesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/vega-tooltip@0.16.0/vega-tooltip.scss">
+    <script src="https://cdn.jsdelivr.net/npm/vega-tooltip@0.16.0/build/vega-tooltip.min.js"></script>
+
+    <style>hr, h3 {padding-bottom: 20px;}canvas {background-color: #fffff;}</style>
+    <style>
+    div.waterfall {
+        width: 1200px;
+        height: 300px;
+        overflow-x: auto;
+        overflow-y: auto;
+    }
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+        <h1 class="text-muted">Flasked Altair for Rainfall Data</h1>
+        <ul class="nav nav-pills pull-right">
+          <li class="active">
+          <li><a href="https://altair-viz.github.io/index.html">Altair</a></li>
+          <li><a href="https://vega.github.io/vega-lite/">Vega-Lite</a></li>
+          <li><a href="http://d3js.org/">D3</a></li>
+          <li><a href="http://flask.pocoo.org/">Flask</a></li>
+        </ul>
+      </div>
+
+      <div class="charts text-center">
+        <br><br>
+        <!--<h1 class="text-muted">Locations in Dataset</h1>-->
+        <!--<div class="row">-->
+          <!--<div id="bar0"></div>-->
+        <!--</div>-->
+        <h1 class="text-muted">Summary Stats by Months (Precipitation)</h1>
+        <div class="row">
+          <div id="bar1"></div>
+          <div id="bar2"></div>
+        </div>
+        <h1 class="text-muted">Summary Stats by Months (Air Temperature)</h1>
+        <div class="row">
+          <div id="bar3"></div>
+          <div id="bar4"></div>
+        </div>
+        <!--<div class="row"><div id="line"></div></div><hr>-->
+        <!--<div class="row"><div id="multiline"></div></div><hr>-->
+        <!--<div class="row"><div id="stocks"></div></div><hr>-->
+        <!--<div class="row"><div id="scatter"></div></div><hr>-->
+
+        <!-- Placeholder for the tooltip -->
+        <!--<div id="vis-tooltip" class="vg-tooltip"></div>-->
+      </div>
+    </div>
+
+    <!-- Render Charts -->
+    <script type="text/javascript">
+      function parse(url, div) {
+        var opt = {
+          mode: "vega-lite",
+          renderer: "svg",
+          actions: {export: true, source: false, editor: false}
+        };
+        vegaEmbed("#"+div, url, opt, function(error, result) {
+          // result.view is the Vega View, url is the original Vega-Lite specification
+          vegaTooltip.vegaLite(result.view, url);
+        });
+      }
+      <!--setTimeout(function () {parse("/showLocations", "bar0")}, 1000)-->
+      setTimeout(function () {parse("/maxStats/prep", "bar1")}, 1000)
+      <!--setTimeout(function () {parse("/minStats/prep", "bar2")}, 3000)-->
+      setTimeout(function () {parse("/maxStats/airTemp", "bar3")}, 3000)
+      <!--setTimeout(function () {parse("/minStats/airTemp", "bar4")}, 7000)-->
+
+    </script>
+
+  </body>
+</html>
