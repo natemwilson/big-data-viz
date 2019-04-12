@@ -88,12 +88,32 @@
           vegaTooltip.vegaLite(result.view, url);
         });
       }
+      <!-- SOME OTHER CHART MAKING CALLS -->
       <!--setTimeout(function () {parse("/showLocations", "bar0")}, 1000)-->
-      setTimeout(function () {parse("/maxStats/prep", "bar1")}, 1000)
       <!--setTimeout(function () {parse("/minStats/prep", "bar2")}, 3000)-->
-      setTimeout(function () {parse("/maxStats/airTemp", "bar3")}, 3000)
       <!--setTimeout(function () {parse("/minStats/airTemp", "bar4")}, 7000)-->
 
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      parse("/maxStats/prep", "bar1")
+      parse("/maxStats/airTemp", "bar3")
+
+      async function update() {
+      while (true) {
+        await sleep(500);
+        parse("/maxStats/prep", "bar1");
+        parse("/maxStats/airTemp", "bar3");
+
+
+      }
+      }
+
+      update();
+
+      <!--setTimeout(function () {parse("/maxStats/prep", "bar1")}, 1000)-->
+      <!--setTimeout(function () {parse("/maxStats/airTemp", "bar3")}, 3000)-->
     </script>
 
   </body>

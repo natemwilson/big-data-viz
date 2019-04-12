@@ -1,15 +1,16 @@
-from flask import Flask
 from flask import Flask, render_template
-import lib
+# import lib
 import xmlrpc.client
 import pandas as pd
 from altair import Chart, X, Y, Axis, Data, DataFormat
 import altair as alt
 from vega_datasets import data
 import pygeohash as pgh
+from transport import RequestsTransport
+import time
 
 app = Flask(__name__)
-proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:22228/')
+proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2222/', transport=RequestsTransport())
 
 
 # minListByMonth_prep = proxy.summarizer.getMinStatsByMonth('PRECIPITATION')
