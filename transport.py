@@ -38,7 +38,7 @@ class RequestsTransport(xmlrpc.Transport):
                    'Content-Type': 'text/xml',
                    }
         url = self._build_url(host, handler)
-        print(f"generated url: {url}")
+        # print(f"generated url: {# url}")
         kwargs = {}
         if StrictVersion(requests.__version__) >= StrictVersion('0.8.8'):
             kwargs['verify']=True
@@ -93,8 +93,8 @@ class RequestsTransport(xmlrpc.Transport):
         """
         scheme = 'https' if self.use_https else 'http'
 
-        print(f"host {host}")
+        # print(f"host {host}")
 
-        print(f"handler {handler}")
+        # print(f"handler {handler}")
 
         return '%s://%s/' % (scheme, host)

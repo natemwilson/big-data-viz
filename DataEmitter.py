@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     for file in txt_files:
         print(f"Reading file: {file}")
-        emitters.append(DataEmitter('localhost', 55557, file))
+        emitters.append(DataEmitter('localhost', 55554, file))
 
     threads = []
     for emitter in emitters:

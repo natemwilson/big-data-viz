@@ -13,7 +13,6 @@ class DataSummarizer(threading.Thread):
         self.index = 1
         self.bins = []
         self.correlation_matrix = StreamCorrelationMatrix()
-
         self.geoHashList = set()
         self.featureMapping = {'AIR_TEMPERATURE':0,
                                'PRECIPITATION' :1,
@@ -48,44 +47,34 @@ class DataSummarizer(threading.Thread):
 
     def getMinForMonth(self, month, feature):
         startDay, endDay = self.get_start_end_day_for_month(month)
-        required_vals = []
+        min_val = 10000
         for i in range(startDay, endDay):
             value = self.getMinForDay(i, feature)
-            print("value: " + str(value))
-            if value != 100000 or int(value) != -9999:
-                required_vals.append(value)
-        if not required_vals:
-            return -1
-        min = np.min(required_vals)
-        return min
+            if value != -9999:
+                min_val = min(min_val, value)
+        return min_val
 
     def getMinStatsByMonth(self, feature):
 
         list = []
         for i in range(1, 13):
             list.append(int(self.getMinForMonth(i, feature)))
-        print("here in max stats by month feature: " + str(list))
+        print("here in min stats by month feature: " + feature + str(list))
         return list
 
     def getMaxForMonth(self, month, feature):
         startDay, endDay = self.get_start_end_day_for_month(month)
-        required_vals = []
+        max_val = -1
         for i in range(startDay, endDay):
             value = self.getMaxForDay(i, feature)
-            if value != -1 or int(value) != -9999:
-                required_vals.append(value)
-        if not required_vals:
-            return -1
-        print("max req vals: " + str(required_vals))
-        max = np.max(required_vals)
-        print("for month: " + str(month) + "max: " + str(max))
-        return max
+            if value != -9999:
+                max_val = max(max_val, value)
+        return max_val
+
 
     def getMaxStatsByMonth(self, feature):
-
         list = []
         for i in range(1, 13):
-            print(i)
             list.append(int(self.getMaxForMonth(i, feature)))
         print("here in max stats by month feature: " + str(list))
         return list
@@ -97,16 +86,14 @@ class DataSummarizer(threading.Thread):
         for i in range(startDay, endDay):
             required_vals.append(self.getVarianceForDay(i, feature))
         variance = np.var(required_vals)
-        return variance
+        return str(variance)
 
     def getvarStatsByMonth(self, feature):
 
-        print("here in var stats by month feature: ")
-        print(feature)
         list = []
         for i in range(1, 13):
             list.append(self.getVarForMonth(i, feature))
-        return list
+        return str(list)
         # print(''.join(str(x) for x in list))
         # return ''.join((str(x) + "   ") for x in list)
 
@@ -147,9 +134,8 @@ class DataSummarizer(threading.Thread):
 
                 featureList = ['AIR_TEMPERATURE', 'PRECIPITATION', 'SOLAR_RADIATION', 'SURFACE_TEMPERATURE',
                                'RELATIVE_HUMIDITY']
-                recordList = [record[i] if int(record[i]) != -9999 else 0 for i in featureList]
-                print(recordList)
-
+                recordList = [record[i] for i in featureList]
+                # if int(record[i]) != -9999 else 0
                 fmt = '%Y%m%d'
                 s = str(record['UTC_DATE'])
                 if s is '20180229':
