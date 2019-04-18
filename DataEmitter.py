@@ -46,21 +46,25 @@ class DataEmitter(EmitterBase):
 
 if __name__ == '__main__':
 
-    txt_files = glob.glob("2006/CRN*.txt")
-    print("num of files: " + str(len(txt_files)))
+    txt_file = "2018/CRNS0101-05-2018-KS_Manhattan_6_SSW.txt"
+    DataEmitter('localhost', 55554, txt_file).start()
 
-    emitters = []
-
-    for file in txt_files:
-        print(f"Reading file: {file}")
-        emitters.append(DataEmitter('localhost', 55554, file))
-
-    threads = []
-    for emitter in emitters:
-        t = threading.Thread(target=emitter.start)
-        threads.append(t)
-        t.start()
-        print(f"starting thread {t}")
+    # txt_files = glob.glob("2006/CRN*.txt")
+    #
+    # print("num of files: " + str(len(txt_files)))
+    #
+    # emitters = []
+    #
+    # for file in txt_files:
+    #     print(f"Reading file: {file}")
+    #     emitters.append(DataEmitter('localhost', 55554, file))
+    #
+    # threads = []
+    # for emitter in emitters:
+    #     t = threading.Thread(target=emitter.start)
+    #     threads.append(t)
+    #     t.start()
+    #     print(f"starting thread {t}")
 
 
 

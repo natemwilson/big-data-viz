@@ -80,6 +80,25 @@ class DataSummarizer(threading.Thread):
         return list
 
 
+    def getMeanForMonth(self, month, feature):
+        startDay, endDay = self.get_start_end_day_for_month(month)
+        required_vals = []
+        for i in range(startDay, endDay):
+            value = self.getMaxForDay(i, feature)
+            if value != -9999:
+                required_vals.append(value)
+        mean = np.mean(required_vals)
+        return mean
+
+
+    def getMeanStatsByMonth(self, feature):
+        list = []
+        for i in range(1, 13):
+            list.append(int(self.getMeanForMonth(i, feature)))
+        print("here in mean stats by month feature: " + str(list))
+        return list
+
+
     def getVarForMonth(self, month, feature):
         startDay, endDay = self.get_start_end_day_for_month(month)
         required_vals = []
@@ -89,13 +108,11 @@ class DataSummarizer(threading.Thread):
         return str(variance)
 
     def getvarStatsByMonth(self, feature):
-
         list = []
         for i in range(1, 13):
             list.append(self.getVarForMonth(i, feature))
         return str(list)
-        # print(''.join(str(x) for x in list))
-        # return ''.join((str(x) + "   ") for x in list)
+
 
     def getMeanStats(self, feature):
         print("here in mean stats feature: ")
@@ -135,7 +152,6 @@ class DataSummarizer(threading.Thread):
                 featureList = ['AIR_TEMPERATURE', 'PRECIPITATION', 'SOLAR_RADIATION', 'SURFACE_TEMPERATURE',
                                'RELATIVE_HUMIDITY']
                 recordList = [record[i] for i in featureList]
-                # if int(record[i]) != -9999 else 0
                 fmt = '%Y%m%d'
                 s = str(record['UTC_DATE'])
                 if s is '20180229':
