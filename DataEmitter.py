@@ -45,7 +45,6 @@ class DataEmitter(EmitterBase):
                 # time.sleep(0.5)
 
 if __name__ == '__main__':
-
     txt_file = "2018/CRNS0101-05-2018-KS_Manhattan_6_SSW.txt"
     DataEmitter('localhost', 55554, txt_file).start()
 
