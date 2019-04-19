@@ -14,9 +14,14 @@ month_lst = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
 height = 150
 width = 200
 
+
 @app.route("/")
 def index():
     return render_template('./index.html')
+
+@app.route('/extras')
+def extras():
+    return render_template('extras.html')
 
 @app.route('/corr/<this>/<that>')
 def serve_corr(this, that):
