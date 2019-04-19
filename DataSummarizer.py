@@ -2,7 +2,7 @@ import threading, struct, logging, queue, time, sys, datetime
 
 from Bin import Bin
 from StreamCorrelationMatrix import StreamCorrelationMatrix
-
+import numpy as np
 
 import pygeohash as pgh
 class DataSummarizer(threading.Thread):
@@ -13,7 +13,6 @@ class DataSummarizer(threading.Thread):
         self.index = 1
         self.bins = []
         self.correlation_matrix = StreamCorrelationMatrix()
-
         self.geoHashList = set()
         self.featureMapping = {'AIR_TEMPERATURE':0,
                                'PRECIPITATION' :1,
@@ -21,15 +20,125 @@ class DataSummarizer(threading.Thread):
                                'SURFACE_TEMPERATURE' :3,
                                'RELATIVE_HUMIDITY' :4
                                }
+        self.monthMapping = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     def getMaxForDay(self, day, feature):
         return self.bins[0].get(day).max[self.featureMapping[feature]]
 
+    def getMinForDay(self, day, feature):
+        return self.bins[0].get(day).min[self.featureMapping[feature]]
+
+    def getMeanForDay(self, day, feature):
+        return self.bins[0].get(day).mean[self.featureMapping[feature]]
+
+    def getVarianceForDay(self, day, feature):
+        return self.bins[0].get(day).variance[self.featureMapping[feature]]
+
+    def getUniqueLocation(self):
+        return tuple(self.geoHashList)
+
+    def get_start_end_day_for_month(self, month):
+        startDay = 0
+        if month is not 1:
+            for i in range(month - 1):
+                startDay += self.monthMapping[i]
+        endDay = startDay + self.monthMapping[month - 1] - 1
+        return startDay, endDay
+
+    def getMinForMonth(self, month, feature):
+        startDay, endDay = self.get_start_end_day_for_month(month)
+        min_val = 10000
+        for i in range(startDay, endDay):
+            value = self.getMinForDay(i, feature)
+            if value != -9999:
+                min_val = min(min_val, value)
+        return min_val
+
+    def getMinStatsByMonth(self, feature):
+
+        list = []
+        for i in range(1, 13):
+            list.append(int(self.getMinForMonth(i, feature)))
+        print("here in min stats by month feature: " + feature + str(list))
+        return list
+
+    def getMaxForMonth(self, month, feature):
+        startDay, endDay = self.get_start_end_day_for_month(month)
+        max_val = -1
+        for i in range(startDay, endDay):
+            value = self.getMaxForDay(i, feature)
+            if value != -9999:
+                max_val = max(max_val, value)
+        return max_val
+
+
+    def getMaxStatsByMonth(self, feature):
+        list = []
+        for i in range(1, 13):
+            list.append(int(self.getMaxForMonth(i, feature)))
+        print("here in max stats by month feature: " + str(list))
+        return list
+
+
+    def getMeanForMonth(self, month, feature):
+        startDay, endDay = self.get_start_end_day_for_month(month)
+        required_vals = []
+        for i in range(startDay, endDay):
+            value = self.getMaxForDay(i, feature)
+            if value != -9999:
+                required_vals.append(value)
+        mean = np.mean(required_vals)
+        return mean
+
+
+    def getMeanStatsByMonth(self, feature):
+        list = []
+        for i in range(1, 13):
+            list.append(int(self.getMeanForMonth(i, feature)))
+        print("here in mean stats by month feature: " + str(list))
+        return list
+
+
+    def getVarForMonth(self, month, feature):
+        startDay, endDay = self.get_start_end_day_for_month(month)
+        required_vals = []
+        for i in range(startDay, endDay):
+            required_vals.append(self.getVarianceForDay(i, feature))
+        variance = np.var(required_vals)
+        return str(variance)
+
+    def getvarStatsByMonth(self, feature):
+        list = []
+        for i in range(1, 13):
+            list.append(self.getVarForMonth(i, feature))
+        return str(list)
+
+
+    def getMeanStats(self, feature):
+        print("here in mean stats feature: ")
+        print(feature)
+        list = []
+        for key in self.bins[0].keys():
+            print(str(self.bins[0].get(key)) + "  for key: " + str(key))
+            print("value: " + str(self.bins[0].get(key).mean[self.featureMapping[feature]]))
+            list.append(self.bins[0].get(key).mean[self.featureMapping[feature]])
+        print(''.join(str(x) for x in list))
+        return ''.join((str(x) + "   ") for x in list)
+        # return list
+
+    def getVarStats(self, feature):
+        print("here in var stats feature: ")
+        print(feature)
+        list = []
+        for key in self.bins[0].keys():
+            print(str(self.bins[0].get(key)) + "  for key: " + str(key))
+            print("value: " + str(self.bins[0].get(key).variance[self.featureMapping[feature]]))
+            list.append(self.bins[0].get(key).variance[self.featureMapping[feature]])
+        print(''.join(str(x) for x in list))
+        return ''.join((str(x) + "   ") for x in list)
 
     def run(self):
         print("summarizer started")
-        # monthBin = Bin(12, 2)
-        # dayBin = Bin(365, 1)
 
         dayBin = {i : Bin() for i in range(366)}
         locationBin = {}
@@ -43,10 +152,10 @@ class DataSummarizer(threading.Thread):
                 featureList = ['AIR_TEMPERATURE', 'PRECIPITATION', 'SOLAR_RADIATION', 'SURFACE_TEMPERATURE',
                                'RELATIVE_HUMIDITY']
                 recordList = [record[i] for i in featureList]
-
-
                 fmt = '%Y%m%d'
                 s = str(record['UTC_DATE'])
+                if s is '20180229':
+                    continue
                 dt = datetime.datetime.strptime(s, fmt)
                 tt = dt.timetuple()
                 nthDay = tt.tm_yday - 1
@@ -62,13 +171,6 @@ class DataSummarizer(threading.Thread):
                     locationBin[geohash] = newBin
                     locationBin[geohash].update(recordList)
                     self.geoHashList.add(geohash)
-
-                print("record: " + str(recordList))
-                print("max of air temperture: " + str(locationBin[geohash].max))
-
-                # for bin in self.bins:
-                #     bin.update(record)
-
 
 
                 self.correlation_matrix.update(record)

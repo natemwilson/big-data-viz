@@ -10,6 +10,7 @@ import datetime
 from xmlrpc.server import SimpleXMLRPCServer
 
 
+
 class AggregatorServer(threading.Thread):
 
     def __init__(self, host, port):
@@ -100,7 +101,6 @@ class AggregatorServer(threading.Thread):
             month = line.split(" ", 1)[0]
             if self.summarizer.bins[int(resolutionLevel)].count[int(month) - 1] == 0:
                 print("No records found for this day!")
-                'break'
             elif statVariable == 1:
                 print("The number of records processed at this month are: " + str(self.summarizer.bins[int(resolutionLevel)].count[int(month) - 1]))
             elif statVariable == 2:
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     agg_server.start()
     #agg_server.start_interpreter()
 
-    rpc_server = SimpleXMLRPCServer(("localhost", 22228))
+    rpc_server = SimpleXMLRPCServer(("localhost", 2228))
     #rpc_server.register_function( "get_correlation")
     rpc_server.register_instance(agg_server, allow_dotted_names=True)
     rpc_server.serve_forever()
