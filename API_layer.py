@@ -20,9 +20,14 @@ width = 200
 def index():
     return render_template('./index.html')
 
-@app.route('/extras')
-def extras():
-    return render_template('extras.html')
+@app.route('/correlation')
+def correlation():
+    return render_template('correlation.html')
+
+
+@app.route('/interactive')
+def interactive():
+    return render_template('interactive.html')
 
 @app.route('/corr/<this>/<that>')
 def serve_corr(this, that):
