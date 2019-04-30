@@ -4,6 +4,7 @@ import pandas as pd
 from altair import Chart, X, Y, Axis, Data, DataFormat
 import pygeohash as pgh
 from transport import RequestsTransport
+import json
 
 app = Flask(__name__)
 proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2228/', transport=RequestsTransport())
@@ -26,6 +27,39 @@ def extras():
 @app.route('/corr/<this>/<that>')
 def serve_corr(this, that):
     return str(proxy.summarizer.correlation_matrix.get_correlation(this, that))
+
+@app.route('/corr_matrix')
+def correlation_matrix():
+    matrix = proxy.summarizer.correlation_matrix.get_matrix()
+
+    columns = ['UTC_DATE',
+               'UTC_TIME',
+               'LONGITUDE',
+               'LATITUDE',
+               'AIR_TEMPERATURE',
+               'PRECIPITATION',
+               'SOLAR_RADIATION',
+               'SURFACE_TEMPERATURE',
+               'RELATIVE_HUMIDITY']
+    x1 = []
+    x2 = []
+    correlations = []
+    for i, row in enumerate(matrix):
+        for j, item in enumerate(row):
+            x1.append(columns[i])
+            x2.append(columns[j])
+            correlations.append(matrix[i][j])
+
+    source = pd.DataFrame({'x1': x1,
+                           'x2': x2,
+                           'correlation': correlations})
+    chart = Chart(source, height=600, width=600).mark_rect().encode(
+        x='x1:O',
+        y='x2:O',
+        color='correlation:Q'
+    )
+
+    return chart.to_json()
 
 @app.route('/max/<day>/<feature>')
 def serve_max_for_day(day, feature):

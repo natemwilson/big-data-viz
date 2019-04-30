@@ -45,3 +45,6 @@ class StreamCorrelationMatrix:
         b_index = self.columns.index(attribute_b)
 
         return self.rs[a_index][b_index]
+
+    def get_matrix(self):
+        return self.rs
