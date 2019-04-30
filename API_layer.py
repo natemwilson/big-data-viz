@@ -5,6 +5,7 @@ from altair import Chart, X, Y, Axis, Data, DataFormat
 import pygeohash as pgh
 from transport import RequestsTransport
 import json
+from flask import request
 
 app = Flask(__name__)
 proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2228/', transport=RequestsTransport())
@@ -25,9 +26,38 @@ def correlation():
     return render_template('correlation.html')
 
 
-@app.route('/interactive')
+@app.route('/interactive', methods=['POST', 'GET'])
 def interactive():
-    return render_template('interactive.html')
+
+    resolution='daily'
+    statistic='mean'
+    feature='AIR_TEMPERATURE'
+    if request.method == 'POST':
+        resolution = request.form['resolution']
+        statistic = request.form['statistic']
+        feature = request.form['feature']
+        print(resolution)
+        print(statistic)
+        print(feature)
+    return render_template('interactive.html', resolution=resolution, statistic=statistic, feature=feature)
+
+
+def make_general_chart(feature, statistic, resolution):
+    maxStatsByMonth = proxy.summarizer.getMaxStatsByMonth(feature)
+    df_list = pd.DataFrame({'data': maxStatsByMonth, 'name': month_lst})
+    chart = Chart(data=df_list, height=height, width=width).mark_bar(color="red").encode(
+        X('name', axis=Axis(title=resolution), sort=None),
+        Y('data', axis=Axis(title=statistic))
+    )
+    return chart
+
+
+@app.route('/generalized_chart/<feature>/<statistic>/<resolution>')
+def generalized_chart_renderer(feature, statistic, resolution):
+
+    chart = make_general_chart(feature, statistic, resolution)
+
+    return chart.to_json()
 
 @app.route('/corr/<this>/<that>')
 def serve_corr(this, that):
@@ -262,6 +292,11 @@ def make_charts(df, color, x_axis_title, y_axis_title, title):
         title= title
     )
     return chart.to_json()
+
+
+
+
+
 
 
 if __name__ == '__main__':

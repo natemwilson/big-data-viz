@@ -1,59 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>HeatMap and Location Details</title>
-    <meta charset="utf-8">
+<head>
+  <title>HeatMap and Location Details</title>
+  <meta charset="utf-8">
 
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">script></script>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc12"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
-    <script src="https://vega.github.io/datalib/datalib.min.js"></script>
-    <link rel="stlesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/vega-tooltip@0.16.0/vega-tooltip.scss">
-    <script src="https://cdn.jsdelivr.net/npm/vega-tooltip@0.16.0/build/vega-tooltip.min.js"></script>
-    <style>hr, h3 {padding-bottom: 20px;}canvas {background-color: #fffff;}</style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active">
-          <li><a href="/">Main page</a></li>
-          <li><a href="/correlation">Correlation</a></li>
-        </ul>
-        <h1 align="center">Interactivity Dashboard</h1>
-      </div>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">script></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc12"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+  <script src="https://vega.github.io/datalib/datalib.min.js"></script>
+  <link rel="stlesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/vega-tooltip@0.16.0/vega-tooltip.scss">
+  <script src="https://cdn.jsdelivr.net/npm/vega-tooltip@0.16.0/build/vega-tooltip.min.js"></script>
+  <style>hr, h3 {padding-bottom: 20px;}canvas {background-color: #fffff;}</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+      <li><a href="/">Main page</a></li>
+      <li><a href="/correlation">Correlation</a></li>
+    </ul>
+    <h1 align="center">Interactivity Dashboard</h1>
+  </div>
 
-      <br><br>
-      <div class="charts text-center">
-          <h1></h1>
-      </div>
+    <br><br>
+    <div class="charts text-center">
+      <form action="/interactive" method="post">
+        <select name="resolution">
+          <option value="yearly">Yearly</option>
+          <option value="monthly">Monthly</option>
+          <option value="daily">Daily</option>
+        </select>
+        <select name="feature">
+          <option value="AIR_TEMPERATURE">AIR_TEMPERATURE</option>
+          <option value="PRECIPITATION">PRECIPITATION</option>
+          <option value="SOLAR_RADIATION">SOLAR_RADIATION</option>
+          <option value="SURFACE_TEMPERATURE">SURFACE_TEMPERATURE</option>
+          <option value="RELATIVE_HUMIDITY">RELATIVE_HUMIDITY</option>
+        </select>
+        <select name="statistic">
+          <option value="max">max</option>
+          <option value="min">min</option>
+          <option value="mean">mean</option>
+        </select>
+        <input type="submit">
+      </form>
+      <h1>{{statistic}}</h1>
     </div>
 
+    <div class="charts text-center" style="min-width:2500;">
+        <br><br>
+        <div class="row">
+          <div id="chart"></div>
+        </div>
+    </div>
+  </div>
 
-     <!--<div class="container">-->
 
-       <!--<div class="header">-->
-        <!--<ul class="nav nav-pills pull-right">-->
-          <!--<li class="active">-->
-          <!--<li><a href="https://altair-viz.github.io/index.html">Altair</a></li>-->
-          <!--<li><a href="https://vega.github.io/vega-lite/">Vega-Lite</a></li>-->
-          <!--<li><a href="http://d3js.org/">D3</a></li>-->
-          <!--<li><a href="http://flask.pocoo.org/">Flask</a></li>-->
-        <!--</ul>-->
-        <!--<h3 class="text-muted">Flasked Altair</h3>-->
-      <!--</div>-->
 
-       <!--<div class="charts text-center">-->
-        <!--<h1>IOWA Electricity consumption chart</h1>-->
-        <!--&lt;!&ndash; Placeholder for the tooltip &ndash;&gt;-->
-        <!--<div id="vis-tooltip" class="vg-tooltip"></div>-->
-      <!--</div>-->
-    <!--</div>-->
 
      <!--&lt;!&ndash; Render Charts &ndash;&gt;-->
     <script type="text/javascript">
@@ -76,12 +85,13 @@
       async function update() {
       while (true) {
         await sleep(500);
-        parse("/corr_matrix", "matrix1")
+        parse("/generalized_chart/{{feature}}/{{statistic}}/{{resolution}}", "chart")
 
       }
       }
 
       update();
+      console.log("{{statistic}}");
     </script>
 
    </body>
