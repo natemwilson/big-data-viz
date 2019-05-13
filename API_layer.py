@@ -1,14 +1,14 @@
 from flask import Flask, render_template
 import xmlrpc.client
 import pandas as pd
-from altair import Chart, X, Y, Axis, Data, DataFormat
+from altair import Chart, X, Y, Axis, Scale
 import pygeohash as pgh
 from transport import RequestsTransport
 import json
 from flask import request
 
 app = Flask(__name__)
-proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2228/', transport=RequestsTransport())
+proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2228/', transport=RequestsTransport(), allow_none=True)
 
 month_lst = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
               'August', 'September', 'October', 'November', 'December']
@@ -42,22 +42,33 @@ def interactive():
     return render_template('interactive.html', resolution=resolution, statistic=statistic, feature=feature)
 
 
-def make_general_chart(feature, statistic, resolution):
-    maxStatsByMonth = proxy.summarizer.getMaxStatsByMonth(feature)
-    df_list = pd.DataFrame({'data': maxStatsByMonth, 'name': month_lst})
-    chart = Chart(data=df_list, height=height, width=width).mark_bar(color="red").encode(
-        X('name', axis=Axis(title=resolution), sort=None),
-        Y('data', axis=Axis(title=statistic))
-    )
-    return chart
-
-
 @app.route('/generalized_chart/<feature>/<statistic>/<resolution>')
 def generalized_chart_renderer(feature, statistic, resolution):
-
-    chart = make_general_chart(feature, statistic, resolution)
-
+    print("generalized_chart", feature, statistic, resolution)
+    width = 700
+    height = 450
+    # if(resolution == 'yearly'):
+    #     data = proxy.summarizer.getStats(feature, statistic, resolution)
+    #     print(str(data))
+    #     return render_template('interactive.html', resolution=resolution, statistic=statistic, feature=feature, result = str(data))
+    #
+    # else:
+    data = proxy.summarizer.getStats(feature, statistic, resolution)
+    title = statistic.capitalize() + " Values for " + feature.capitalize() + " at " + resolution.capitalize() + " resolution"
+    if resolution == 'monthly':
+        name = month_lst
+    else:
+        name = [i for i in range(1,366)]
+    df_list = pd.DataFrame({'data': data, 'name': name})
+    chart = (Chart(data=df_list, height=height, width=width).mark_bar(color="red").encode(
+        X('name', axis=Axis(title=resolution), sort=None, scale=Scale(domain=(1, len(name)))),
+        Y('data', axis=Axis(title=statistic))
+    )).properties(
+        title= title
+    )
     return chart.to_json()
+
+
 
 @app.route('/corr/<this>/<that>')
 def serve_corr(this, that):

@@ -25,11 +25,33 @@ class DataSummarizer(threading.Thread):
     def getMaxForDay(self, day, feature):
         return self.bins[0].get(day).max[self.featureMapping[feature]]
 
+    def getMaxStatsDaily(self, feature):
+        list = []
+        for i in range(0,365):
+            list.append(int(self.getMaxForDay(i, feature)))
+        print("here in max stats by day:" + str(list))
+        return list
+
     def getMinForDay(self, day, feature):
         return self.bins[0].get(day).min[self.featureMapping[feature]]
 
+    def getMinStatsDaily(self, feature):
+        print("here in min daily, feature:", feature)
+        list = []
+        for i in range(0, 365):
+            list.append(int(self.getMinForDay(i, feature)))
+        print("here in max stats by day feature: " + str(list))
+        return list
+
     def getMeanForDay(self, day, feature):
         return self.bins[0].get(day).mean[self.featureMapping[feature]]
+
+    def getMeanStatsDaily(self, feature):
+        list = []
+        for i in range(0, 365):
+            list.append(int(self.getMaxForDay(i, feature)))
+        print("here in max stats by month feature: " + str(list))
+        return list
 
     def getVarianceForDay(self, day, feature):
         return self.bins[0].get(day).variance[self.featureMapping[feature]]
@@ -98,6 +120,56 @@ class DataSummarizer(threading.Thread):
         print("here in mean stats by month feature: " + str(list))
         return list
 
+    def getStats(self, feature, statistic, resolution):
+        print(feature, statistic, resolution)
+        if (resolution == 'Monthly') | (resolution == 'monthly'):
+            if statistic == 'min':
+                return self.getMinStatsByMonth(feature)
+            elif statistic == 'max':
+                return self.getMaxStatsByMonth(feature)
+            elif statistic == 'mean':
+                return self.getMeanStatsByMonth(feature)
+
+        elif (resolution == 'Daily') | (resolution == 'daily'):
+            if statistic == 'min':
+                return self.getMinStatsDaily(feature)
+            elif statistic == 'max':
+                return self.getMaxStatsDaily(feature)
+            elif statistic == 'mean':
+                return self.getMeanStatsDaily(feature)
+
+        else:
+            if statistic == 'min':
+                return self.getMinStatsYearly(feature)
+            elif statistic == 'max':
+                return self.getMaxStatsYearly(feature)
+            elif statistic == 'mean':
+                return self.getMeanStatsYearly(feature)
+
+    def getMaxStatsYearly(self, feature):
+        max_val = -1
+        for i in range(0, 365):
+            value = self.getMaxForDay(i, feature)
+            if value != -9999:
+                max_val = max(max_val, value)
+        return max_val
+
+    def getMinStatsYearly(self, feature):
+        min_val = 10000
+        for i in range(0, 365):
+            value = self.getMinForDay(i, feature)
+            if value != -9999:
+                min_val = min(min_val, value)
+        return min_val
+
+    def getMeanStatsYearly(self, feature):
+        required_vals = []
+        for i in range(0, 365):
+            value = self.getMeanForDay(i, feature)
+            if value != -9999:
+                required_vals.append(value)
+        mean_val = np.mean(required_vals)
+        return mean_val
 
     def getVarForMonth(self, month, feature):
         startDay, endDay = self.get_start_end_day_for_month(month)

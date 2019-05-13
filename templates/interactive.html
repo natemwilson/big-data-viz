@@ -32,11 +32,12 @@
     <div class="charts text-center">
       <form action="/interactive" method="post">
         <select name="resolution">
-          <option value="yearly">Yearly</option>
-          <option value="monthly">Monthly</option>
+          <option disabled selected value> -- select a resolution -- </option>
           <option value="daily">Daily</option>
+          <option value="monthly">Monthly</option>
         </select>
         <select name="feature">
+          <option disabled selected value> -- select a feature -- </option>
           <option value="AIR_TEMPERATURE">AIR_TEMPERATURE</option>
           <option value="PRECIPITATION">PRECIPITATION</option>
           <option value="SOLAR_RADIATION">SOLAR_RADIATION</option>
@@ -44,19 +45,21 @@
           <option value="RELATIVE_HUMIDITY">RELATIVE_HUMIDITY</option>
         </select>
         <select name="statistic">
+          <option disabled selected value> -- select a statistic -- </option>
+          <option value="mean">mean</option>
           <option value="max">max</option>
           <option value="min">min</option>
-          <option value="mean">mean</option>
         </select>
         <input type="submit">
       </form>
-      <h1>{{statistic}}</h1>
+      <h4>{{resolution}} {{statistic}} {{feature}}</h4>
     </div>
 
     <div class="charts text-center" style="min-width:2500;">
         <br><br>
         <div class="row">
           <div id="chart"></div>
+
         </div>
     </div>
   </div>
@@ -83,11 +86,10 @@
       }
 
       async function update() {
-      while (true) {
-        await sleep(500);
-        parse("/generalized_chart/{{feature}}/{{statistic}}/{{resolution}}", "chart")
-
-      }
+        while (true) {
+          await sleep(500);
+            parse("/generalized_chart/{{feature}}/{{statistic}}/{{resolution}}", "chart")
+        }
       }
 
       update();
