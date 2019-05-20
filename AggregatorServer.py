@@ -144,11 +144,11 @@ class AggregatorServer(threading.Thread):
         return index
 
 if __name__ == '__main__':
-    agg_server = AggregatorServer('localhost', 55559)
+    agg_server = AggregatorServer('localhost', 55555)
     agg_server.start()
     #agg_server.start_interpreter()
 
-    rpc_server = SimpleXMLRPCServer(("localhost", 2228))
+    rpc_server = SimpleXMLRPCServer(("localhost", 2222))
     #rpc_server.register_function( "get_correlation")
     rpc_server.register_instance(agg_server, allow_dotted_names=True)
     rpc_server.serve_forever()

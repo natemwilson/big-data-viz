@@ -46,7 +46,7 @@ class DataEmitter(EmitterBase):
 
 if __name__ == '__main__':
     txt_file = "2018/CRNS0101-05-2018-KS_Manhattan_6_SSW.txt"
-    DataEmitter('localhost', 55559, txt_file).start()
+    DataEmitter('localhost', 55555, txt_file).start()
 
     # txt_files = glob.glob("2006/CRN*.txt")
     #

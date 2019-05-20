@@ -8,7 +8,7 @@ import json
 from flask import request
 
 app = Flask(__name__)
-proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2228/', transport=RequestsTransport(), allow_none=True)
+proxy = xmlrpc.client.ServerProxy('http://0.0.0.0:2222/', transport=RequestsTransport(), allow_none=True)
 
 month_lst = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
               'August', 'September', 'October', 'November', 'December']
@@ -30,33 +30,33 @@ def correlation():
 def interactive():
 
     resolution='daily'
-    statistic='mean'
-    feature='AIR_TEMPERATURE'
+    statistic1='min'
+    feature1='AIR_TEMPERATURE'
+    statistic2 = 'max'
+    feature2 = 'AIR_TEMPERATURE'
     if request.method == 'POST':
         resolution = request.form['resolution']
-        statistic = request.form['statistic']
-        feature = request.form['feature']
+        statistic1 = request.form['statistic1']
+        feature1 = request.form['feature1']
+        statistic2 = request.form['statistic2']
+        feature2 = request.form['feature2']
         print(resolution)
-        print(statistic)
-        print(feature)
-    return render_template('interactive.html', resolution=resolution, statistic=statistic, feature=feature)
+        print(statistic1)
+        print(feature1)
+        print(statistic2)
+        print(feature2)
+    return render_template('interactive.html', resolution=resolution, statistic1=statistic1, feature1=feature1, statistic2=statistic2, feature2=feature2)
 
 
 @app.route('/generalized_chart/<feature>/<statistic>/<resolution>')
 def generalized_chart_renderer(feature, statistic, resolution):
     print("generalized_chart", feature, statistic, resolution)
-    width = 700
-    height = 450
-    # if(resolution == 'yearly'):
-    #     data = proxy.summarizer.getStats(feature, statistic, resolution)
-    #     print(str(data))
-    #     return render_template('interactive.html', resolution=resolution, statistic=statistic, feature=feature, result = str(data))
-    #
-    # else:
+    width = 400
+    height = 250
     data = proxy.summarizer.getStats(feature, statistic, resolution)
     title = statistic.capitalize() + " Values for " + feature.capitalize() + " at " + resolution.capitalize() + " resolution"
     if resolution == 'monthly':
-        name = month_lst
+        name = [i for i in range(1,13)]
     else:
         name = [i for i in range(1,366)]
     df_list = pd.DataFrame({'data': data, 'name': name})
@@ -131,73 +131,6 @@ def serve_variance_for_day(day, feature):
 def serve_unique_location():
     locations = proxy.summarizer.getUniqueLocation()
     return str(locations)
-
-    # lat_long_vals = [pgh.decode(i) for i in locations]
-    # d = pd.DataFrame(lat_long_vals)
-    # states = alt.topo_feature(data.us_10m.url, 'states')
-    #
-    # # US states background
-    # background = alt.Chart(states).mark_geoshape(
-    #     fill='lightgray',
-    #     stroke='white'
-    # ).properties(
-    #     title='US State Capitols',
-    #     width=700,
-    #     height=400
-    # ).project('albersUsa')
-    #
-    # # Points and text
-    # hover = alt.selection(type='single', on='mouseover', nearest=True,
-    #                       fields=['lat', 'lon'])
-    #
-    # base = alt.Chart(d).encode(
-    #     longitude='0:Q',
-    #     latitude='1:Q'
-    # )
-    #
-    # points = base.mark_point().encode(
-    #     color=alt.value('black'),
-    #     size=alt.condition(~hover, alt.value(30), alt.value(100))
-    # ).add_selection(hover)
-    #
-    # return (background + points).to_json()
-
-
-
-# @app.route('/meanStats/<feature>')
-# def serve_mean_stats(feature):
-#     print(feature)
-#     result = proxy.summarizer.getMeanStats(feature)
-#     result_array = str(result).split()
-#     list_name = ['l' + str(x) for x in range(1, 367)]
-#     df_list = pd.DataFrame({'data': result_array, 'name': list_name})
-#     print(list_name)
-#     print(result_array)
-#     print("printing!!!")
-#     print(len(result_array), len(list_name))  # Print all of them out here
-#
-#     chart = Chart(data=df_list, height=height, width=width).mark_bar(color='lightgreen').encode(
-#         X('name', axis=Axis(title='Sample')),
-#         Y('data', axis=Axis(title='Value'))
-#     )
-#     # return chart.to_json()
-#     return str(result)
-
-#
-# @app.route('/varStats/<feature>')
-# def serve_var_stats(feature):
-#     result = proxy.summarizer.getvarStatsByMonth(feature)
-#     result_array = str(result).split()
-#     list_name = ['' + str(x) for x in range(1, 13)]
-#     df_list = pd.DataFrame({'data': result_array, 'name': list_name})
-#
-#     chart = Chart(data=df_list, height=height, width=width).mark_bar(color='lightgreen').encode(
-#         X('name', axis=Axis(title='Sample')),
-#         Y('data', axis=Axis(title='Value'))
-#     )
-#     # return chart.to_json()
-#     return str(result)
-
 
 @app.route('/maxStats/AIR_TEMPERATURE')
 def serve_max_stats_air_temp():
